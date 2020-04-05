@@ -35,3 +35,8 @@ solution*
 *.app
 demo
 test
+
+
+#my ignores
+
+/.vscode
