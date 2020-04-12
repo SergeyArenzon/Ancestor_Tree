@@ -80,25 +80,43 @@ int treeHeight(Person* root, string rel_name){
 }
 
 // getting relation string and returns its height in the tree
-int stringToNum(string relation){
+bool stringToNum(string relation){
+    bool legalWord = false;
     std::regex words_regex("[^\\s-]+");
     auto words_begin = std::sregex_iterator(relation.begin(), relation.end(), words_regex);
     auto words_end = std::sregex_iterator();
-
-    if ((*words_begin).str() == "great"){
-        int great_count = 0;
-        for (std::sregex_iterator i = words_begin; i != words_end; ++i){
-            if((*i).str() == "great") great_count++;
-        }
-            return great_count+2;
+    
+    
+    int size = 0;
+    for (std::sregex_iterator i = words_begin; i != words_end; ++i) size++;
+    
+    if(size == 1 && 
+    ((*words_begin).str() == "grandfather" 
+    || (*words_begin).str() == "grandmother"
+    || (*words_begin).str() == "father" 
+    || (*words_begin).str() == "mother")){
+        return true;
+    }else if(size > 1){
+        // 
+        //
+        //HAVE TO COMPLETE
+        //
+        //
+        //
     }
-    else if ((*words_begin).str() == "grandfather" ||  (*words_begin).str() == "grandmother") return 2;
-    else return 1;
+    return false;
 }
 
 
-string reltaionsNames(Person* root, int height, bool isMale){
-    
+Person* reltaionsNames(Person* root, string relation){
+     if(root==nullptr)
+		return nullptr;
+	if(root->relation == relation)
+		return root;
+	Person *found = reltaionsNames(root->father, relation);
+	if(found != nullptr)
+		return found;
+	return reltaionsNames(root->mother, relation);
 }
 
 
@@ -118,10 +136,7 @@ family::Person::Person(string person_name, bool is_male){
     father = nullptr;
     mother = nullptr;
     isMale = is_male;
-
 };
-
-
 
 
 
@@ -136,6 +151,7 @@ family::Tree& Tree::addFather(string child, string father){
         Person* child_found = findPerson(root, child);
         Person* f = new Person(father, true);
         child_found->father = f;
+        child_found->father->relation = relation(father);
         return *this;
     };
 
@@ -144,6 +160,7 @@ family::Tree& family::Tree::addMother(string child, string mother){
         Person* child_found = findPerson(root, child);
         Person* f = new Person(mother, false);
         child_found->mother = f;
+        child_found->mother->relation = relation(mother);
         return *this;
     };
 
@@ -164,35 +181,30 @@ void family::Tree::display(){
     
 };
 string family::Tree::find(string relation){
-    int count = stringToNum(relation);
-    return to_string(count);
-    std::regex words_regex("[^\\s-]+");
-    auto words_begin = std::sregex_iterator(relation.begin(), relation.end(), words_regex);
-    auto words_end = std::sregex_iterator();
-
-    bool isMale;
-    if((*words_end).str() == "grandfather" || (*words_end).str() == "father") isMale = true;
-    else if((*words_end).str() == "grandmother" || (*words_end).str() == "mother") isMale = false;
-    else return "wrong find() input";
-
-    
-
+    Person* found = reltaionsNames(root, relation);
+    return found->name;
 
 };
+
+
 void family::Tree::remove(string name){};
 
 
 // int main(){
-//     // family::Tree T ("Yosef"); // Yosef is the "root" of the tree (the youngest person).
-// 	// T.addFather("Yosef", "Yaakov")  // Tells the tree that the father of Yosef is Yaakov.
-// 	//    .addMother("Yosef", "Rachel")  // Tells the tree that the mother of Yosef is Rachel.
-//     //    .addFather("Yaakov", "Isaac")
-// 	//    .addMother("Yaakov", "Rivka")
-// 	//    .addFather("Isaac", "Avraham")
-// 	//    .addFather("Avraham", "Terah")
-//     //    .addMother("Rachel", "x");
-//     //    cout<<T.root->mother->mother->name<<endl;
-//     //   //T.display();
-//     //stringToNum("great-great grandmother");
+//     family::Tree T ("Yosef"); // Yosef is the "root" of the tree (the youngest person).
+// 	T.addFather("Yosef", "Yaakov")  // Tells the tree that the father of Yosef is Yaakov.
+// 	    .addMother("Yosef", "Rachel") // Tells the tree that the mother of Yosef is Rachel.
+//         .addFather("Yaakov", "Isaac")
+// 	    .addMother("Yaakov", "Rivka")
+// 	    .addFather("Isaac", "Avraham")
+// 	    .addFather("Avraham", "Terah");
+
+        
+
+
+//        // cout<<T.root->father->father->father->name<<endl;
+//        // cout<<T.root->father->father->father->relation<<endl;
+//        //cout<<T.find("great-great-grandfather")<<endl;
+//     cout<<stringToNum("great-grandmother")<<endl;
 //     return 0;
 // }

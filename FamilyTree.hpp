@@ -7,6 +7,7 @@ namespace family{
         public:
         string name;
         bool isMale;
+        string relation;
         Person* mother;
         Person* father;
         Person(string name);
