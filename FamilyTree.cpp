@@ -3,72 +3,77 @@
 #include <iostream>
 using namespace family;
 
+// --------------
+// HELP FUNCTIONS
+// --------------
 
-// FUNCTIONS
-
-
-Person& findPerson(Person* root, string child_name){
-    if(root == nullptr) throw exception();
-    else if(root->name.compare(child_name) == 0) return *root;
-    else{
-        if(root->father == nullptr)return findPerson(root->mother, child_name);
-        else if(root->mother == nullptr)return findPerson(root->father, child_name);
-        else {
-            return findPerson(root->mother, child_name);
-            return findPerson(root->father, child_name);
-        }
+Person* findPerson(Person* root, string child_name){
+    if(root == nullptr) {
+        throw exception();
         
-    }
+        }
+    else if(root->name.compare(child_name) == 0) return root;
+
+    return findPerson(root->father, child_name);
+    return findPerson(root->mother, child_name);
 }
 
-string calcRelation(int count, bool gender){
-    if(count == 1) {
-        if (gender == true) return "father";
-        else return "mother";
+
+string printTree(Person* root, string family){
+    if(root->father == nullptr && root->mother == nullptr) {       
+        return family;      
+        }
+    if(root->father == nullptr){
+        family += "[Son: "+root->name+" Mother: "+root->mother->name+"]"; 
+        return printTree(root->mother, family);
+    } 
+    if(root->mother == nullptr){
+        family += "[Son: "+root->name+", Father: "+root->father->name+"]";
     
-    }else if(count == 2) {
-        if (gender == true) return "grandfather";
+        return printTree(root->father, family);
+    }  
+    family += "[Son: "+root->name+", Father: "+root->father->name+", Mother: "+root->mother->name+"]";
+    return printTree(root->father, family);
+    return printTree(root->mother, family);
+}
+
+string countRelation(int height, bool gender){
+    if(height == 1) {
+        if(gender) return "father";
+        else return "mother";
+    }else if(height == 2){
+        if(gender) return "grandfather";
         else return "grandmother";
-        
-    }
-    else{
-        string path = "";
-        for (size_t i = 0; i < count - 3; i++)
+    }else{
+        string great = "";
+        for (size_t i = 0; i < height - 3; i++)
         {
-            path += "great ";
+            great += "great ";
         }
-        if (gender == true) return path + "grandfather";
-        else return path + "grandmother";
-        
-    }    
-} 
-
-string getRelation(Person* root,string person, int count){
-    if(root == nullptr) throw exception();
-    else if(root->name.compare(person) == 0) return to_string(count);
-    else{
-        if(root->father == nullptr)return getRelation(root->mother, person, count);
-        else if(root->mother == nullptr)return getRelation(root->father, person, count);
-        else {
-            return getRelation(root->mother, person, count);
-            return getRelation(root->father, person, count);
-        }
-        
+        if(gender) return great+"grandfather";
+        else return great+"grandmother";
     }
+
 }
 
-
-string printTree(Person* root){
-    if(root == nullptr) throw exception();
-    else if (root->father != nullptr){
-        cout<<root->name<<endl;
-        return printTree(root->father);
-    }else if (root->mother != nullptr){
-        cout<<root->name<<endl;
-        return printTree(root->mother);
+string treeHeight(Person* root, string rel_name, int height){
+   height++;
+   if(root->father == nullptr && root->mother == nullptr) {       
+        if(root->name == rel_name) return to_string(height);      
+        }else
+        {
+            throw exception();
+        }
+    if(root->name == rel_name) return to_string(height);    
+    if(root->father == nullptr){
+        return treeHeight(root->mother, rel_name, height);
+    } 
+    if(root->mother == nullptr){
+        return treeHeight(root->father, rel_name, height);
+    }  
+    return treeHeight(root->father, rel_name, height);
+    return treeHeight(root->mother, rel_name, height);
 }
-}
-
 
 // PERSON
 family::Person::Person(string person_name){
@@ -94,41 +99,42 @@ family::Tree::Tree(string name){
 };
 
 family::Tree& Tree::addFather(string child, string father){
-    Person& child_found = findPerson(root, child);
-    Person* f = new Person(father, true);
-    child_found.father = f;
-
-    return *this;
+        Person* child_found = findPerson(root, child);
+        Person* f = new Person(father, true);
+        child_found->father = f;
+        return *this;
     };
 
 
 family::Tree& family::Tree::addMother(string child, string mother){
-    Person& child_found = findPerson(root, child);
-    Person* f = new Person(mother, false);
-    child_found.mother = f;
-    return *this;
+        Person* child_found = findPerson(root, child);
+        Person* f = new Person(mother, false);
+        child_found->mother = f;
+        return *this;
     };
 
 string family::Tree::relation(string rel_name){
     
-    return getRelation(root, rel_name,0);
+    //return treeHeight(root, rel_name, 0);
     
 };
 void family::Tree::display(){
-    printTree(root);
+    cout<<printTree(root, "")<<endl;
+    
 };
 string family::Tree::find(string name){return "";};
 void family::Tree::remove(string name){};
 
 
-int main(){
-    Tree t("X");
-
-    t.addFather("X","Y");
-    t.addMother("X", "Z");
-    t.addFather("Z", "W");
-    t.addFather("X", "F");
-    //cout<<t.root->mother->father->name<<endl;;
-   //t.relation("Y");
-    return 0;
-}
+// int main(){
+//     family::Tree T ("Yosef"); // Yosef is the "root" of the tree (the youngest person).
+// 	T.addFather("Yosef", "Yaakov")   // Tells the tree that the father of Yosef is Yaakov.
+// 	   .addMother("Yosef", "Rachel")   // Tells the tree that the mother of Yosef is Rachel.
+// 	   .addFather("Yaakov", "Isaac")
+// 	   .addMother("Yaakov", "Rivka")
+// 	   .addFather("Isaac", "Avraham")
+// 	   .addFather("Avraham", "Terah");
+//       //T.display();
+    
+//     return 0;
+// }
