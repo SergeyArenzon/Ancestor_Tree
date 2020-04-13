@@ -80,36 +80,18 @@ int treeHeight(Person* root, string rel_name){
 }
 
 // getting relation string and returns its height in the tree
-bool stringToNum(string relation){
-    bool legalWord = false;
-    std::regex words_regex("[^\\s-]+");
-    auto words_begin = std::sregex_iterator(relation.begin(), relation.end(), words_regex);
-    auto words_end = std::sregex_iterator();
+bool checkLegailInput(string relation){
     
+        regex pat{ "^(?:(?:great-)*grand)?(?:mother|father)$" };
+        bool match = regex_search(relation, pat);
+        if(match) return true;
+        else return false;
     
-    int size = 0;
-    for (std::sregex_iterator i = words_begin; i != words_end; ++i) size++;
-    
-    if(size == 1 && 
-    ((*words_begin).str() == "grandfather" 
-    || (*words_begin).str() == "grandmother"
-    || (*words_begin).str() == "father" 
-    || (*words_begin).str() == "mother")){
-        return true;
-    }else if(size > 1){
-        // 
-        //
-        //HAVE TO COMPLETE
-        //
-        //
-        //
-    }
-    return false;
 }
 
 
 Person* reltaionsNames(Person* root, string relation){
-     if(root==nullptr)
+    if(root==nullptr)
 		return nullptr;
 	if(root->relation == relation)
 		return root;
@@ -119,7 +101,29 @@ Person* reltaionsNames(Person* root, string relation){
 	return reltaionsNames(root->mother, relation);
 }
 
+void deleteTree(Person* node)  
+{  
+    if (node == NULL) return;  
+  
+    /* first delete both subtrees */
+    deleteTree(node->mother);  
+    deleteTree(node->father);  
+    cout<<"deleted: "<<node->name<<endl;
+    free(node) ;  
+    node = NULL;
+}  
 
+// find given person child by name
+Person* findChild(Person* root, string child_name){
+    if(root->father == nullptr && root->mother == nullptr)
+		return nullptr;
+	if(root->father->name == child_name) return root;
+	else if(root->mother->name == child_name) return root;
+	Person *found = findChild(root->father,child_name);
+	if(found != nullptr)
+		return found;
+	return findChild(root->mother, child_name);
+}
 
 // ----------------
 // PERSON FUNCTIONS
@@ -181,13 +185,33 @@ void family::Tree::display(){
     
 };
 string family::Tree::find(string relation){
-    Person* found = reltaionsNames(root, relation);
-    return found->name;
-
+    if(checkLegailInput(relation)){
+        Person* found = reltaionsNames(root, relation);
+        return found->name;
+    }else throw runtime_error( "The tree cannot handle the '" + relation + "' relation");
+    
 };
 
 
-void family::Tree::remove(string name){};
+void family::Tree::remove(string name){
+    bool gender;
+    Person* found = findPerson(root, name);
+
+    if(found != nullptr) {
+        Person* child = findChild(root, name);
+        if(child->father->name == name && child->father != nullptr) gender = true;
+        else gender = false;
+        deleteTree(found);
+        if(gender) child->father = nullptr;
+        else child->mother = nullptr;
+
+    }else{
+
+        throw runtime_error( "'"+ name +"'" + "doesnt exist");
+    }
+
+
+};
 
 
 // int main(){
@@ -205,6 +229,9 @@ void family::Tree::remove(string name){};
 //        // cout<<T.root->father->father->father->name<<endl;
 //        // cout<<T.root->father->father->father->relation<<endl;
 //        //cout<<T.find("great-great-grandfather")<<endl;
-//     cout<<stringToNum("great-grandmother")<<endl;
+//        T.remove("Avrahsdfsdfam");
+//        //T.root->father->father->father = nullptr;
+//        cout<<T.root->father->father->father->father->name<<endl;
+
 //     return 0;
 // }
