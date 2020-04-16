@@ -1,6 +1,5 @@
 #include "FamilyTree.hpp"
 #include <string>
-#include <iostream>
 #include <regex>
 #include <iostream>
 using namespace family;
@@ -196,10 +195,16 @@ string family::Tree::find(string relation){
 void family::Tree::remove(string name){
     bool gender;
     Person* found = findPerson(root, name);
-
+    
     if(found != nullptr) {
-        Person* child = findChild(root, name);
-        if(child->father->name == name && child->father != nullptr) gender = true;
+        Person* child;
+        if((root->father && root->father->name == found->name) || (root->mother && root->mother->name == found->name)){
+             child = root;
+        }else{
+            child = findChild(root, name);
+        }
+        
+        if(child->father != nullptr && (child->father->name == name ) )gender = true;
         else gender = false;
         deleteTree(found);
         if(gender) child->father = nullptr;
@@ -215,23 +220,45 @@ void family::Tree::remove(string name){
 
 
 // int main(){
-//     family::Tree T ("Yosef"); // Yosef is the "root" of the tree (the youngest person).
-// 	T.addFather("Yosef", "Yaakov")  // Tells the tree that the father of Yosef is Yaakov.
-// 	    .addMother("Yosef", "Rachel") // Tells the tree that the mother of Yosef is Rachel.
-//         .addFather("Yaakov", "Isaac")
-// 	    .addMother("Yaakov", "Rivka")
-// 	    .addFather("Isaac", "Avraham")
-// 	    .addFather("Avraham", "Terah");
+//     // family::Tree T ("Yosef"); // Yosef is the "root" of the tree (the youngest person).
+// 	// T.addFather("Yosef", "Yaakov")  // Tells the tree that the father of Yosef is Yaakov.
+// 	//     .addMother("Yosef", "Rachel") // Tells the tree that the mother of Yosef is Rachel.
+//     //     .addFather("Yaakov", "Isaac")
+// 	//     .addMother("Yaakov", "Rivka")
+// 	//     .addFather("Isaac", "Avraham")
+// 	//     .addFather("Avraham", "Terah");
 
         
 
 
-//        // cout<<T.root->father->father->father->name<<endl;
-//        // cout<<T.root->father->father->father->relation<<endl;
-//        //cout<<T.find("great-great-grandfather")<<endl;
-//        T.remove("Avrahsdfsdfam");
-//        //T.root->father->father->father = nullptr;
-//        cout<<T.root->father->father->father->father->name<<endl;
+//     //    // cout<<T.root->father->father->father->name<<endl;
+//     //    // cout<<T.root->father->father->father->relation<<endl;
+//     //    //cout<<T.find("great-great-grandfather")<<endl;
+//     //    T.remove("Avrahsdfsdfam");
+//     //    //T.root->father->father->father = nullptr;
+//     //    cout<<T.root->father->father->father->father->name<<endl;
 
-//     return 0;
-// }
+
+
+//     // remove
+//  family::Tree T("a");
+//     T.addMother("a","b");
+//     T.addFather("b", "c");
+//     T.addFather("c", "d");
+//     T.addFather("d", "e");
+//     T.addFather("e", "f");
+//     T.remove("b") ;
+//     // CHECK_NOTHROW(T.remove("c") );
+//     // CHECK_NOTHROW(T.remove("d") );
+//     // CHECK_NOTHROW(T.remove("e") );
+//     // CHECK_NOTHROW(T.remove("f") );
+//     // CHECK_THROWS_AS(T.remove("k"), const std::exception&);
+//     // CHECK_THROWS_AS(T.remove("z"), const std::exception&);
+//     // CHECK_THROWS_AS(T.remove("a"), const std::exception&);
+//     // CHECK_THROWS_AS(T.remove("b"), const std::exception&);
+//     // CHECK_THROWS_AS(T.remove("c"), const std::exception&);
+//     // CHECK_THROWS_AS(T.remove("d"), const std::exception&);
+//     // CHECK_THROWS_AS(T.remove("e"), const std::exception&);
+//     // CHECK_THROWS_AS(T.remove("f"), const std::exception&);
+ //    return 0;
+ //}
