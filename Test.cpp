@@ -218,3 +218,40 @@ TEST_CASE("MIX"){
     CHECK_THROWS_AS(TTTT.remove(""), const std::exception&);
 
 } //11
+
+
+TEST_CASE("Test 1 find") {
+
+    family::Tree T ("Yonit");
+    T.addFather("Yonit", "Arel")
+    .addMother("Yonit", "Ronit")
+    .addFather("Ronit", "Yonatan")
+    .addMother("Ronit", "Simha")
+    .addFather("Arel", "Yosef")
+    .addMother("Arel", "Dikla");
+
+     CHECK(T.find("mother") == string("Ronit"));
+     CHECK(T.find("father") == string("Arel"));
+     CHECK((T.find("grandfather") == string("Yosef") || T.find("grandfather") == string("Yonatan")));
+     CHECK((T.find("grandmother") == string("Simha") || T.find("grandmother") == string("Dikla")));
+     CHECK_THROWS(T.find("uncle")); //there is no option of "uncle" on this tree
+    CHECK_THROWS(T.find("sister"));
+     CHECK_THROWS(T.find("great-grandfather")); //there is no great-grandfather here
+    CHECK_THROWS(T.find("great-grandmother"));
+    
+    T.addMother("Yosef", "Efrat").addFather("Yosef", "Shmuel").addFather("Shmuel", "Israel");
+
+    CHECK(T.find("grandmother") == string("Efrat"));
+     CHECK(T.find("grandfather") == string("Shmuel"));
+     CHECK(T.find("great-grandfather") == string("Israel"));
+     CHECK_THROWS(T.find("great-grandmother"));
+
+     T.addFather("Yonatan", "Ofer").addMother("Yonatan", "Sima").addMother("Simha", "Ester"); 
+
+    CHECK((T.find("grandfather") == string("Shmuel") || T.find("grandfather") == string("Ofer"))); 
+    CHECK((T.find("grandmother") == string("Efrat") 
+        || T.find("grandmother") == string("Sima")
+        || T.find("grandmother") == string("Ester"))); 
+    CHECK_THROWS(T.find("great-great-grandfather"));
+    CHECK_THROWS(T.find("great-great-great-great-grandfather"));
+}

@@ -193,7 +193,8 @@ void family::Tree::display(){
 string family::Tree::find(string relation){
     if(checkLegailInput(relation)){
         Person* found = reltaionsNames(root, relation);
-        return found->name;
+        if(found == nullptr) throw exception();
+        else return found->name;
     }else throw runtime_error( "The tree cannot handle the '" + relation + "' relation");
     
 };
