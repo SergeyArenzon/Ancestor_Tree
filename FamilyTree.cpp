@@ -169,11 +169,15 @@ family::Tree& Tree::addFather(string child, string father){
         Person* child_found = findPerson(root, child);
         if(child_found == nullptr) throw exception();
         else{
-            Person* f = new Person(father, true);
-            child_found->father = f;
-            child_found->father->relation = relation(father);
-        return *this;}
-        
+            if(child_found->father != nullptr) throw exception();
+            else{
+                Person* f = new Person(father, true);
+                child_found->father = f;
+                child_found->father->relation = relation(father);
+                 return *this;}
+            
+            }
+            
     };
 
 
@@ -181,13 +185,15 @@ family::Tree& family::Tree::addMother(string child, string mother){
         Person* child_found = findPerson(root, child);
         if(child_found == nullptr) throw exception();
         else{
-            Person* f = new Person(mother, false);
-            child_found->mother = f;
-            child_found->mother->relation = relation(mother);
-            return *this;
-        }
-        
-    };
+            if(child_found->mother != nullptr) throw exception();
+            else{
+                Person* f = new Person(mother, true);
+                child_found->mother = f;
+                child_found->mother->relation = relation(mother);
+                 return *this;}
+            
+            }
+        };
 
 string family::Tree::relation(string rel_name){
 

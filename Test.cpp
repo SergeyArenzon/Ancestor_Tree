@@ -133,8 +133,8 @@ TEST_CASE("MIX"){
     TTT.addFather("e", "f");
     CHECK(TTT.relation("f") == string("great-grandfather"));
     
-    TTT.addFather("e", "g");
-    CHECK(TTT.relation("g") == string("great-grandfather"));
+    TTT.addMother("e", "g");
+    CHECK(TTT.relation("g") == string("great-grandmother"));
 
 
 
@@ -194,7 +194,7 @@ TEST_CASE("MIX"){
     TTTT.addFather("c", "d");   
     TTTT.addMother("c", "e");
     TTTT.addFather("e", "f");
-    TTTT.addFather("e", "g");
+    TTTT.addMother("e", "g");
 
     CHECK_NOTHROW(TTTT.remove("c"));
     CHECK_THROWS_AS(TTTT.remove("d"), const std::exception&);
@@ -256,40 +256,58 @@ TEST_CASE("MIX"){
 //     CHECK_THROWS(T.find("great-great-great-great-grandfather"));
 // }
 
-TEST_CASE("Test 1 remove") {
+// TEST_CASE("Test 1 remove") {
 
-    family::Tree T ("Maya");
-    T.addMother("Maya", "Anat")
-    .addFather("Maya", "Rami")
-     .addMother("Anat", "Rivka")
-     .addFather("Anat", "Yoni")
-     .addMother("Yoni", "Vered")
-     .addFather("Yoni", "Shlomi")
-     .addFather("Rami", "David");
+//     family::Tree T ("Maya");
+//     T.addMother("Maya", "Anat")
+//     .addFather("Maya", "Rami")
+//      .addMother("Anat", "Rivka")
+//      .addFather("Anat", "Yoni")
+//      .addMother("Yoni", "Vered")
+//      .addFather("Yoni", "Shlomi")
+//      .addFather("Rami", "David");
 
-    CHECK_THROWS(T.remove("Maya")); //try to remove the root --> exception
+//     CHECK_THROWS(T.remove("Maya")); //try to remove the root --> exception
 
-      CHECK((T.find("grandfather") == string("David") || T.find("grandfather") == string("Yoni")));
+//       CHECK((T.find("grandfather") == string("David") || T.find("grandfather") == string("Yoni")));
 
-      CHECK(T.find("father") == string("Rami"));
-     T.remove("Rami"); 
-    CHECK_THROWS(T.find("father"));
-    CHECK(T.find("grandfather") == string("Yoni")); //because David has removed from the tree while removing Rami
+//       CHECK(T.find("father") == string("Rami"));
+//      T.remove("Rami"); 
+//     CHECK_THROWS(T.find("father"));
+//     CHECK(T.find("grandfather") == string("Yoni")); //because David has removed from the tree while removing Rami
 
-    CHECK(T.find("great-grandmother") == string("Vered")); 
-     CHECK(T.find("great-grandfather") == string("Shlomi")); 
-     T.remove("Vered");
-    CHECK_THROWS(T.find("great-grandmother"));
-    T.remove("Yoni");
-    CHECK_THROWS(T.find("great-grandfather"));
-    CHECK_THROWS(T.find(T.find("grandfather")));
+//     CHECK(T.find("great-grandmother") == string("Vered")); 
+//      CHECK(T.find("great-grandfather") == string("Shlomi")); 
+//      T.remove("Vered");
+//     CHECK_THROWS(T.find("great-grandmother"));
+//     T.remove("Yoni");
+//     CHECK_THROWS(T.find("great-grandfather"));
+//     CHECK_THROWS(T.find(T.find("grandfather")));
 
-    T.addFather("Anat", "Nir"); //we've removed Yoni, sowe can add new father to Anat now
-    CHECK(T.find("grandfather") == string("Nir")); 
-    CHECK(T.find("grandmother") == string("Rivka"));
-    T.remove("Rivka"); 
-    CHECK_THROWS(T.find("grandmother")); 
-    T.remove("Anat"); 
-    CHECK_THROWS(T.find("grandfather")); 
-    CHECK_THROWS(T.find("mother"));
+//     T.addFather("Anat", "Nir"); //we've removed Yoni, sowe can add new father to Anat now
+//     CHECK(T.find("grandfather") == string("Nir")); 
+//     CHECK(T.find("grandmother") == string("Rivka"));
+//     T.remove("Rivka"); 
+//     CHECK_THROWS(T.find("grandmother")); 
+//     T.remove("Anat"); 
+//     CHECK_THROWS(T.find("grandfather")); 
+//     CHECK_THROWS(T.find("mother"));
+// }
+
+
+
+
+TEST_CASE("add father") {
+   family::Tree t("Nati");
+   CHECK_NOTHROW(t.addFather("Nati", "Nadav"));
+   CHECK_NOTHROW(t.addFather("Nadav", "Haim"));
+   CHECK_NOTHROW(t.addFather("Haim", "Dori"));
+
+   CHECK(t.find("father") == "Nadav");
+   CHECK(t.find("grandfather") == "Haim");
+   CHECK(t.find("great-grandfather") == "Dori");
+
+   CHECK_THROWS(t.addFather("Nati", "Nadav")); // Nati alredy have a father
+   CHECK_THROWS(t.addFather("Nadav", "Avi")); // Nadav alredy have a father
+   CHECK_THROWS(t.addFather("Dani", "Avi")); // Dani not exist
 }
