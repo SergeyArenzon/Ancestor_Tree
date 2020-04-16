@@ -182,6 +182,7 @@ family::Tree& family::Tree::addMother(string child, string mother){
         Person* child_found = findPerson(root, child);
         if(child_found == nullptr) throw exception();
         else{
+            if(child_found->mother != nullptr) throw exception();
             Person* f = new Person(mother, false);
             child_found->mother = f;
             child_found->mother->relation = relation(mother);
