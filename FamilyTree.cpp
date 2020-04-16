@@ -114,10 +114,25 @@ void deleteTree(Person* node)
 
 // find given person child by name
 Person* findChild(Person* root, string child_name){
-    if(root->father == nullptr && root->mother == nullptr)
+    // cout<<"check: " + root->name<<endl; 
+    // if(root  == nullptr && root->mother == nullptr)
+	// 	return nullptr;
+       
+	// if(root->father != nullptr && (root->father->name == child_name)) return root;
+	// if(root->mother != nullptr && (root->mother->name == child_name)) return root; 
+
+	// Person *found = findChild(root->father,child_name);
+	// if(found != nullptr)
+	// 	return found;
+	// return findChild(root->mother, child_name);
+
+
+
+
+    if(root==nullptr)
 		return nullptr;
-	if(root->father->name == child_name) return root;
-	else if(root->mother->name == child_name) return root;
+	if( (root->mother && root->mother->name == child_name) || (root->father && root->father->name == child_name))
+		return root;
 	Person *found = findChild(root->father,child_name);
 	if(found != nullptr)
 		return found;
@@ -201,27 +216,33 @@ string family::Tree::find(string relation){
 
 
 void family::Tree::remove(string name){
-    bool gender;
-    Person* found = findPerson(root, name);
-    
-    if(found != nullptr) {
-        Person* child;
-        if((root->father && root->father->name == found->name) || (root->mother && root->mother->name == found->name)){
-             child = root;
+    if(name == root->name) throw exception();
+    else{
+        bool gender;
+        Person* found = findPerson(root, name);
+        cout<<"remove: "+name<<endl; 
+        if(found != nullptr) {
+            
+            Person* child;
+            
+            if((root->father && root->father->name == found->name) || (root->mother && root->mother->name == found->name)){
+                child = root;
+            }else{
+                child = findChild(root, name);
+            }
+            
+            if(child->father != nullptr && (child->father->name == name ) )gender = true;
+            else gender = false;
+            deleteTree(found);
+            if(gender) child->father = nullptr;
+            else child->mother = nullptr;
+
         }else{
-            child = findChild(root, name);
+
+            throw runtime_error( "'"+ name +"'" + "doesnt exist");
         }
-        
-        if(child->father != nullptr && (child->father->name == name ) )gender = true;
-        else gender = false;
-        deleteTree(found);
-        if(gender) child->father = nullptr;
-        else child->mother = nullptr;
-
-    }else{
-
-        throw runtime_error( "'"+ name +"'" + "doesnt exist");
     }
+    
 
 
 };
