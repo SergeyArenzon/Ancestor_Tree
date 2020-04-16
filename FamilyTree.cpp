@@ -207,6 +207,7 @@ void family::Tree::display(){
     
 };
 string family::Tree::find(string relation){
+    if(relation == "me") return root->name;
     if(checkLegailInput(relation)){
         Person* found = reltaionsNames(root, relation);
         if(found == nullptr) throw exception();
